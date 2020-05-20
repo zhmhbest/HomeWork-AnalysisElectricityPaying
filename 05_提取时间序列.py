@@ -18,7 +18,7 @@ df_pay.reset_index(drop=True, inplace=True)
 
 # 日期整数化
 first_date = df_pay.loc[0]['date']
-df_pay['date_num'] = df_pay['date'].map(lambda x: (x - first_date).days)
+df_pay['days'] = df_pay['date'].map(lambda x: (x - first_date).days)
 
 # 保存
 df_pay.to_csv("./output/time_line.csv", index=False, encoding='utf-8-sig')
