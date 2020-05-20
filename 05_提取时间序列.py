@@ -1,21 +1,10 @@
 import numpy as np
 import pandas as pd
 
-
-def get_date_from_string(sda):
-    import datetime
-    """
-    从字符串创建一个date对象
-    :param {string} sda:
-    """
-    s = sda.split('-')
-    return datetime.date(int(s[0]), int(s[1]), int(s[2]))
-
-
 # 读取数据
-df_pay = pd.read_csv("./customer_pay_habbit.csv", encoding='utf8')
+df_pay = pd.read_csv("./customer_pay_habbit.csv")
 df_pay.columns = ['id', 'date', 'fee']
-df_ids = pd.read_csv("./output/ids.csv", encoding='utf8')
+df_ids = pd.read_csv("./output/ids.csv")
 ids = df_ids['id']
 
 # 修正日期列

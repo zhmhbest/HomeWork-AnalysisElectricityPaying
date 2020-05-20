@@ -2,10 +2,10 @@ import numpy as np
 import pandas as pd
 
 # 读取数据
-# df_pay = pd.read_csv("./customer_pay_habbit.csv", encoding='utf8')
-df_ids = pd.read_csv("./output/ids.csv", encoding='utf8')
+# df_pay = pd.read_csv("./customer_pay_habbit.csv")
+df_ids = pd.read_csv("./output/ids.csv")
 ids = df_ids['id']
-df_plus = pd.read_csv("./output/user_plus.csv", encoding='utf8')
+df_plus = pd.read_csv("./output/user_plus.csv")
 
 # 用户类型
 """

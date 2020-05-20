@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 
-df_pay = pd.read_csv("./customer_pay_habbit.csv", encoding='utf8')
+df_pay = pd.read_csv("./customer_pay_habbit.csv")
 
 # 修改列名
 df_pay.columns = ['id', 'date', 'fee']
