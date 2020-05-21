@@ -1,2 +1,4 @@
 .idea
 dump.py
+output/plt/**
+!output/plt/README.md
