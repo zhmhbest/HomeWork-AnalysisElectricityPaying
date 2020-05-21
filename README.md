@@ -7,4 +7,5 @@
 - numpy
 - pandas
 - statsmodels
+- sympy
 - matplotlib
