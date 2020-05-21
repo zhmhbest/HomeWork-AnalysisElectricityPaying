@@ -4,8 +4,10 @@
 
 **需要的插件**
 
-- numpy
-- pandas
-- statsmodels
-- sympy
-- matplotlib
+```bash
+# numpy
+# pandas
+# matplotlib
+# scipy
+pip install statsmodels==0.10.0 -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
+```
