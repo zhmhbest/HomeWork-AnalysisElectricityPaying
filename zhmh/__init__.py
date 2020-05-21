@@ -1,5 +1,4 @@
 import os
-import matplotlib.pyplot as plt
 
 
 def get_path(save_path, name):

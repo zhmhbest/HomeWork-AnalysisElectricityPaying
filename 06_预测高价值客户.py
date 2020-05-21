@@ -1,12 +1,8 @@
-import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.interpolate as spi
 from zhmh import get_path
-
-# import statsmodels
-# import statsmodels.api as sm
 # https://www.statsmodels.org/devel/generated/statsmodels.tsa.arima_model.ARIMA.predict.html#statsmodels.tsa.arima_model.ARIMA.predict
 from statsmodels.tsa.arima_model import ARIMA, ARMA
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
@@ -14,8 +10,8 @@ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 
 # 参数设置
 SUB_PADDING = 1.5  # 子图间距
-DEBUG = False
-DEBUG_NUM = 5
+DEBUG = True
+DEBUG_NUM = 3
 PREDICT_DAYS = 30
 
 
@@ -48,6 +44,11 @@ for uid in ids:
     print(uid, end=': ')
     pre_data = df[df['id'] == uid]
     # print(pre_data)
+    first_data = pre_data.head(1)
+    first_date = first_data['date'].values[0]
+    first_fee = first_data['fee'].values[0]
+    # print('date:', first_date)
+    # print('fee:', first_fee)
 
     ##############################
 
@@ -104,14 +105,13 @@ for uid in ids:
 
     # 创建模型
     try:
-        module_arima = ARIMA(data, order=(1, 2, 1)).fit(disp=False)
-        # module_arima = ARIMA(data, order=(2, 2, 2)).fit(disp=False)
+        # module = ARMA(data,  order=(1, 1))
+        ts_module = ARIMA(data, order=(1, 2, 5)).fit(disp=False)
     except ValueError:
-        # 1000000092
-        module_arima = ARIMA(data, order=(2, 2, 1)).fit(disp=False)
+        ts_module = ARIMA(data, order=(2, 2, 1)).fit(disp=False)
     # end try
-    fitted_values = module_arima.fittedvalues
-    print(module_arima.aic, module_arima.bic, module_arima.hqic)
+    fitted_values = ts_module.fittedvalues
+    # print(module.aic, module.bic, module.hqic)
 
     ##############################
 
@@ -132,13 +132,17 @@ for uid in ids:
 
     ##############################
 
-    # 预测
+    # https://www.jianshu.com/p/88d663ecdf25
+    # 预测(cumsum还原差分)
     st_date = range_date_min + pd.Timedelta(days=2)
     ed_date = range_date_max + pd.Timedelta(days=PREDICT_DAYS)
-    forecast = module_arima.predict(st_date, ed_date).cumsum()  # cumsum还原差分
+    forecast = ts_module.predict(st_date, ed_date)
+    time_series_restored = (pd.Series().append(forecast.cumsum()).cumsum() + first_fee)
 
     # 绘图
-    forecast.plot()
+    plt.plot(pre_data['date'], pre_data['fee'], label='Real')
+    time_series_restored.plot(label='Forecast')
+    # plt.plot(time_series_restored.index, time_series_restored)
     plt.title('Predict')
     plt.grid()
     plt.legend()
