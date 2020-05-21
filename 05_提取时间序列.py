@@ -21,4 +21,4 @@ first_date = df_pay.loc[0]['date']
 df_pay['days'] = df_pay['date'].map(lambda x: (x - first_date).days)
 
 # 保存
-df_pay.to_csv("./output/time_line.csv", index=False, encoding='utf-8-sig')
+df_pay.to_csv("./output/time_sequence.csv", index=False, encoding='utf-8-sig')
