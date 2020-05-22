@@ -24,5 +24,21 @@ for uid in ids:
         'pay_mean': col_fee.mean()
     })
 
+
+# 保存
 df_user = pd.DataFrame(user_buffer)
 df_user.to_csv("./output/user.csv", index=False, encoding='utf-8-sig')
+
+
+# 计算平均付费能力
+user_number = df_user.shape[0]
+all_times = df_user['pay_times'].sum()
+all_fee = df_user['pay_sum'].sum()
+mean_times = all_times / user_number    # 人均缴费次数
+mean_pay = all_fee / all_times          # 次均缴费额度
+pd.DataFrame({
+    "times": [mean_times],
+    "pay": [mean_pay]
+}).to_csv("./output/user_mean.csv", index=False, encoding='utf-8-sig')
+print("人均缴费次数：", mean_times)
+print("次均缴费额度：", mean_pay)
