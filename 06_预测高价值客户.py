@@ -10,7 +10,7 @@ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 # 参数设置
 SUB_PADDING = 1.5  # 子图间距
 DEBUG = False
-DEBUG_NUM = 3
+DEBUG_NUM = 1
 PREDICT_DAYS = 30
 
 
@@ -32,6 +32,7 @@ DATE_RANG = pd.period_range(DATE_BOUND['min'], DATE_BOUND['max'], freq='D')
 DATE_DAYS_RANG = range(DATE_BOUND['min_d'], DATE_BOUND['max_d'] + 1)
 
 
+buffer = []
 index = 1
 # 循环训练
 for uid in ids:
@@ -145,9 +146,13 @@ for uid in ids:
     # 还原二阶
     time_series_restored = (pd.Series().append(time_series_restored).cumsum() + first_fee)
 
+    # 统计平均值
+    mean_predict = time_series_restored.mean()
+    buffer.append({'id': uid, 'mean_predict': mean_predict})
+
     # 绘图
     plt.plot(pre_data['date'], pre_data['fee'], label='Real')
-    time_series_restored.plot(label='Forecast')
+    time_series_restored.plot(label='Predict')
     # plt.plot(time_series_restored.index, time_series_restored)
     plt.title('Predict')
     plt.grid()
@@ -164,3 +169,8 @@ for uid in ids:
     if DEBUG and index == DEBUG_NUM:
         break
     index += 1
+
+# 保存数据
+df_predict = pd.DataFrame(buffer)
+df_predict.sort_values(by='mean_predict', ascending=False, inplace=True)
+df_predict.to_csv("./output/predict.csv", index=False, encoding='utf-8-sig')
