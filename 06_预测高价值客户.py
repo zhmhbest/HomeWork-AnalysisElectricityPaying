@@ -3,14 +3,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.interpolate as spi
 from zhmh import get_path
-# https://www.statsmodels.org/devel/generated/statsmodels.tsa.arima_model.ARIMA.predict.html#statsmodels.tsa.arima_model.ARIMA.predict
 from statsmodels.tsa.arima_model import ARIMA, ARMA
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 
 
 # 参数设置
 SUB_PADDING = 1.5  # 子图间距
-DEBUG = True
+DEBUG = False
 DEBUG_NUM = 3
 PREDICT_DAYS = 30
 
@@ -92,6 +91,9 @@ for uid in ids:
 
     # 差分
     data_diff = data.diff(1).dropna()
+    diff_first_data = data_diff.head(1)
+    diff_first_date = diff_first_data.index.values[0]
+    diff_first_fee = diff_first_data['fee'].values[0]
 
     # ACF
     plot_acf(data_diff, ax=plt.subplot(223))
@@ -104,11 +106,12 @@ for uid in ids:
     ##############################
 
     # 创建模型
+    # https://www.statsmodels.org/devel/generated/statsmodels.tsa.arima_model.ARIMA
     try:
-        # module = ARMA(data,  order=(1, 1))
-        ts_module = ARIMA(data, order=(1, 2, 5)).fit(disp=False)
+        ts_module = ARIMA(data_diff, order=(2, 1, 1)).fit(disp=False)
     except ValueError:
-        ts_module = ARIMA(data, order=(2, 2, 1)).fit(disp=False)
+        print("err", uid)
+        break
     # end try
     fitted_values = ts_module.fittedvalues
     # print(module.aic, module.bic, module.hqic)
@@ -137,7 +140,10 @@ for uid in ids:
     st_date = range_date_min + pd.Timedelta(days=2)
     ed_date = range_date_max + pd.Timedelta(days=PREDICT_DAYS)
     forecast = ts_module.predict(st_date, ed_date)
-    time_series_restored = (pd.Series().append(forecast.cumsum()).cumsum() + first_fee)
+    # 还原一阶
+    time_series_restored = (pd.Series().append(forecast).cumsum() + diff_first_fee)
+    # 还原二阶
+    time_series_restored = (pd.Series().append(time_series_restored).cumsum() + first_fee)
 
     # 绘图
     plt.plot(pre_data['date'], pre_data['fee'], label='Real')
